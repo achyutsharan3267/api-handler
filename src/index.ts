@@ -6,7 +6,7 @@ import type { ComponentType } from 'react';
 let toast: any | undefined;
 let toastId: string | number | null = null;
 let toastInitialized = false;
-
+// inial just checking
 // Lazy loader for toast using dynamic import (works in both ESM and CommonJS)
 async function initializeToast() {
   if (toastInitialized) return;
