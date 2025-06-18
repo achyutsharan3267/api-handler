@@ -1,0 +1,41 @@
+{
+  "name": "api-handler",
+  "version": "1.0.0",
+  "description": "A TypeScript-based Axios wrapper for API calls with optional toast notifications",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc",
+    "postbuild": "cp package.module.json dist/package.json"
+  },
+  "keywords": [
+    "axios",
+    "api",
+    "typescript",
+    "react",
+    "toast",
+    "http"
+  ],
+  "author": "Achyut Sharan",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "axios": "^1.10.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.3",
+    "@types/react": "^19.1.8",
+    "typescript": "^5.8.3"
+  },
+  "peerDependencies": {
+    "react-toastify": "^11.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/achyutsharan3267/api-handler.git"
+  },
+  "bugs": {
+    "url": "https://github.com/achyutsharan3267/api-handler/issues"
+  },
+  "homepage": "https://github.com/achyutsharan3267/api-handler#readme"
+}
