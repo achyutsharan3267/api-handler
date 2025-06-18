@@ -1,5 +1,5 @@
 {
-  "name": "api-handler",
+  "name": "axios-helper-kit",
   "version": "1.0.0",
   "description": "A TypeScript-based Axios wrapper for API calls with optional toast notifications",
   "main": "dist/index.js",

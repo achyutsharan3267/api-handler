@@ -1,4 +1,4 @@
-# api-handler
+# axios-helper-kit
 
 A TypeScript-based Axios wrapper for API calls, with optional toast notifications via [react-toastify](https://github.com/fkhadra/react-toastify). Supports both React and non-React projects.
 
@@ -6,17 +6,16 @@ A TypeScript-based Axios wrapper for API calls, with optional toast notification
 
 - Factory function `createAPI()` for easy API client creation
 - Optional `Authorization: Bearer <token>` header injection
-- Optional toast notifications on success/error (configurable)
+- Optional toast notifications on success/error (configurable with custom messages)
 - Exposes common HTTP methods: `get`, `post`, `put`, `delete` (returns `res.data` only)
 - Exports types for configuration
-- Exports `ToastContainer` for convenience (but does **not** render it automatically)
+- Exports `APIToastContainer` component for React projects
 - Works in both React and non-React projects (toast is a peer dependency)
 
 ## Installation
 
-```
-npm install api-handler axios
-npm install --save-peer react-toastify # Only if you want toast notifications
+```bash
+npm install axios-helper-kit axios react-toastify
 ```
 
 ## Usage
@@ -24,7 +23,7 @@ npm install --save-peer react-toastify # Only if you want toast notifications
 ### 1. Basic API Client
 
 ```ts
-import { createAPI } from "api-handler";
+import { createAPI } from "axios-helper-kit";
 
 const api = createAPI({ baseURL: "https://api.example.com" });
 
@@ -43,8 +42,11 @@ const api = createAPI({
 
 ### 3. With Toast Notifications (React projects)
 
+**⚠️ IMPORTANT: You MUST import the CSS and render the APIToastContainer component!**
+
 ```tsx
-import { createAPI, ToastContainer } from "api-handler";
+import { createAPI, APIToastContainer } from "axios-helper-kit";
+import "react-toastify/dist/ReactToastify.css"; // 🚨 REQUIRED CSS IMPORT
 
 const api = createAPI({
   baseURL: "https://api.example.com",
@@ -55,18 +57,57 @@ const api = createAPI({
 function App() {
   return (
     <>
-      <ToastContainer /> {/* Place this ONCE in your app root */}
-      {/* ... */}
+      {/* 🚨 REQUIRED: Place APIToastContainer ONCE in your app root */}
+      <APIToastContainer />
+      {/* Your app content */}
+      <div>Your app content...</div>
     </>
   );
 }
 ```
 
-**Note:** The package does NOT automatically render `<ToastContainer />`. You must place it in your app root if you want to see toasts.
+### 4. Custom Toast Messages
 
-### 4. Non-React Projects
+```tsx
+const api = createAPI({
+  baseURL: "https://api.example.com",
+  withToast: true,
+  successMessage: "Operation completed successfully! ✅",
+  errorMessage: "Something went wrong! ❌",
+  // Or use functions for dynamic messages
+  successMessage: (response) => `Success: ${response.data.message}`,
+  errorMessage: (error) =>
+    `Error: ${error.response?.data?.message || error.message}`,
+});
+```
 
-You can use the API client without enabling `withToast`, or safely ignore the toast features.
+### 5. Toast Options
+
+```tsx
+const api = createAPI({
+  baseURL: "https://api.example.com",
+  withToast: true,
+  toastOptions: {
+    position: "top-right",
+    autoClose: 5000,
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: true,
+    theme: "light",
+  },
+});
+```
+
+### 6. Non-React Projects
+
+You can use the API client without enabling `withToast`:
+
+```ts
+const api = createAPI({
+  baseURL: "https://api.example.com",
+  withToast: false, // No toast notifications
+});
+```
 
 ## API
 
@@ -76,22 +117,53 @@ You can use the API client without enabling `withToast`, or safely ignore the to
 
 - `baseURL: string` (required)
 - `getToken?: () => Promise<string | undefined> | string | undefined` (optional)
-- `withToast?: boolean` (optional, default: false)
+- `withToast?: boolean` (optional, default: true)
+- `successMessage?: string | ((res: AxiosResponse) => string)` (optional)
+- `errorMessage?: string | ((err: any) => string)` (optional)
+- `toastOptions?: ToastOptions` (optional)
+- `deduplicateToasts?: boolean` (optional, default: true)
 
 #### `API` methods
 
-- `get<T>(url, config?)`
-- `post<T>(url, data?, config?)`
-- `put<T>(url, data?, config?)`
-- `delete<T>(url, config?)`
-- `instance` (the underlying Axios instance)
+- `get<T>(url, config?)` - GET request
+- `post<T>(url, data?, config?)` - POST request
+- `put<T>(url, data?, config?)` - PUT request
+- `delete<T>(url, config?)` - DELETE request
+- `instance` - Direct access to the underlying Axios instance
 
-All methods return `res.data` only.
+All methods return `res.data` only (not the full response object).
+
+## Components
+
+### `APIToastContainer`
+
+React component that renders the toast container. Must be placed in your app root.
+
+```tsx
+import { APIToastContainer } from "axios-helper-kit";
+
+// Basic usage
+<APIToastContainer />
+
+// With custom props
+<APIToastContainer
+  position="bottom-right"
+  autoClose={3000}
+  theme="dark"
+/>
+```
+
+## Requirements for Toast Notifications
+
+1. **Install react-toastify**: `npm install react-toastify`
+2. **Import CSS**: `import 'react-toastify/dist/ReactToastify.css';`
+3. **Render component**: `<APIToastContainer />` in your app root
+4. **Enable toasts**: `withToast: true` in createAPI config
 
 ## Responsibility
 
-- **This package:** API logic, token injection, toast trigger, and type safety.
-- **You:** Place `<ToastContainer />` in your React app root if you want to see toasts.
+- **This package:** API logic, token injection, toast triggering, and type safety
+- **You:** Import the CSS and place `<APIToastContainer />` in your React app root
 
 ## License
 
